@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const app = express();
 
 // 1) MIDDLEWARES
+// param middleware is the middleware that only runs in case of certain parameters.
+
 app.use(morgan('dev'));
 
 app.use(express.json());
