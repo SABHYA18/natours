@@ -19,9 +19,25 @@ app.use((req, res, next) => {
   next();
 });
 
+// The http method for the request
+/*
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Hello from the server side!',
+    app: 'Natours',
+  });
+});
+
+app.post('/', (req, res) => {
+  res.send('You can get the post request on this endpoint');
+});
+*/
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+
+// the callback function in this crud operation is called a route handler
 
 // 2) ROUTE HANDLERS
 
@@ -142,22 +158,35 @@ const deleteUser = (req, res) => {
   });
 };
 
+/*
+//v->specifies the version of the api
+// variable is defined by /: ;
+//  /:? is called the optional parameter
+app.get('/api/v1/tours', getAllTours);
+app.get('/api/v1/tours/:id', getTour);
+app.post('/api/v1/tours', createTour);
+app.patch('/api/v1/tours/:id', updateTour);
+app.delete('/api/v1/tours/:id', deleteTour);
+*/
+
+//our routing functions are also middleware but only for specified urls
+
 // 3) ROUTES
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
-const tourRouter = express.Router(); //->middleware
-const userRouter = express.Router();
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
-// route "/" here is the main route in the above app.use
-tourRouter.route('/').get(getAllTours).post(createTour);
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
 
-tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
-
-userRouter.route('/').get(getAllUsers).post(createUser);
-
-userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
-
-app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 // 4) START THE SERVER
 const port = 3000;
