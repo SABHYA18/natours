@@ -15,6 +15,18 @@ exports.checkID = (req, res, next, val) => {
   next();
 };
 
+exports.checkBody = (req, res, next) => {
+  const name = req.body.name;
+  const price = req.body.price;
+  if (!price || !name) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'name or price not defined',
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   // console.log(req.requestTime);
   res.status(200).json({
@@ -42,7 +54,7 @@ exports.getTour = (req, res) => {
 };
 
 exports.createTour = (req, res) => {
-  //   console.log(req.body);
+  console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
 
