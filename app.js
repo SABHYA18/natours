@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
-  console.log('This is middleware🙃');
+  // console.log('This is middleware🙃');
   next();
 });
 
