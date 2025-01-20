@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require("./userModel");
 
 const tourSchema = new mongoose.Schema(
   {
@@ -101,6 +102,12 @@ const tourSchema = new mongoose.Schema(
         description: String,
         day: Number
       }
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+      }
     ]
   },
   {
@@ -113,12 +120,26 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 }); // arrow function not used because it doesn't have it's own this keyword and we need it here
 
+// Virtual populate
+tourSchema.virtual('reviews',{
+  ref: 'Review',
+  foreignField: 'tour',  // like a foreign key to connect review and tour model
+  localField: '_id'
+})
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() but not on .insertMany()
 // Pre document middleware
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+// Embedding :-
+// tourSchema.pre('save', async function(next){
+//   const guidesPromises = this.guides.map(async id=> await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// })
 
 // tourSchema.pre('save', function (next) {
 //   console.log('Will save document...');
@@ -139,6 +160,14 @@ tourSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
 });
+
+tourSchema.pre(/^find/, function(next){
+  this.populate({
+    path:'guides',
+    select: '-__v -passwordChangedAt'
+  });
+  next();
+})
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} ms`);
