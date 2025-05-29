@@ -46,7 +46,7 @@ exports.createOne = Model => catchAsync(async (req, res, next) => {
     },
   });
   next();
-});
+}); 
 
 //4. to get one model
 exports.getOne = (Model, popOptions)=>catchAsync(async (req, res, next) => {
@@ -80,6 +80,7 @@ exports.getAll = Model=>catchAsync(async (req, res, next) => {
     .paginate();
 
   const document = await features.query;
+  // const document = await features.query.explain();
 
   //SEND RESPONSE
   res.status(200).json({

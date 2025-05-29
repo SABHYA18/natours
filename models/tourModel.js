@@ -116,6 +116,13 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+// tourSchema.index({price: 1})  // 1 means sorting in ascending
+//tourSchema.index({price: -1})  -1 means sorting in descending
+
+tourSchema.index({price: 1, ratingsAverage: -1});
+
+tourSchema.index({slug: 1});
+
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 }); // arrow function not used because it doesn't have it's own this keyword and we need it here
